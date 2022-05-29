@@ -14,16 +14,38 @@ export default function ({ store }: { store: Pinia }) {
       component: () => import('layouts/MainLayout.vue'),
       children: [{
         path: 'home',
+        name: 'home',
         component: () => import('pages/HomePage.vue')
+      }, {
+        path: 'is-admin',
+        name: 'isAdmin',
+        component: () => import('pages/IsOnRolePage.vue'),
+        meta: {
+          auth: 'admin'
+        }
+      }, {
+        path: 'is-developer',
+        name: 'isDeveloper',
+        component: () => import('pages/IsOnRolePage.vue'),
+        meta: {
+          auth: 'developer'
+        }
       }],
+      meta: {
+        auth: true
+      }
     },
     {
       path: '/',
       component: () => import('layouts/AuthLayout.vue'),
       children: [{
         path: 'login',
+        name: 'login',
         component: () => import('pages/LoginPage.vue')
       }],
+      meta: {
+        auth: false
+      }
     },
     // Always leave this as last one,
     // but you can also remove it

@@ -109,6 +109,11 @@ export const useMainLayoutStore = defineStore(authLayoutStoreName, {
         }
       ]
     }
+  },
+  actions: {
+    toggleLeftDrawer () {
+      this.leftDrawerOpen = this.leftDrawerOpen
+    }
   }
 });
 export type MainLayoutStore = ReturnType<typeof useMainLayoutStore>;
@@ -125,13 +130,12 @@ export default defineComponent({
 
     const { leftDrawerOpen } = storeToRefs(store)
     const essentialLinks = computed(() => store.linksList)
+    const { toggleLeftDrawer } = store
 
     return {
       essentialLinks,
       leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      toggleLeftDrawer
     }
   }
 });

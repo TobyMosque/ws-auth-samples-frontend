@@ -1,6 +1,7 @@
 import { boot } from 'quasar/wrappers';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { inject, InjectionKey } from 'vue';
+import { Notify } from 'quasar';
 import {
   AuthApi,
   UserApi,
@@ -12,7 +13,9 @@ import {
   JobApi,
   DefaultApi
 } from 'api';
+import { useAppStore } from 'src/stores/app';
 
+type AxiosInstance = ConstructorParameters<typeof AuthApi>[2]
 declare module 'pinia' {
   export interface PiniaCustomProperties {
     $api: AxiosInstance,
@@ -53,11 +56,48 @@ export function useApi () {
   }
 }
 
-export default boot(({ app, store }) => {
+
+export default boot(({ app, store, router }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
   const url = 'http://localhost:3000'
-  const api = axios.create({ baseURL: url }) as never;
+  const api = axios.create({ baseURL: url }) as AxiosInstance;
   
+  const appStore = useAppStore(store)
+  api?.interceptors.request.use(function (config) {
+    if (appStore.isLogged()) {
+      if (!config?.headers) {
+        config.headers = {}
+      }
+      config.headers.Authorization = `Bearer ${appStore.token}`;
+    }
+    return config;
+  }, function (error) {
+    return Promise.reject(error);
+  });
+
+
+  api?.interceptors.response.use(function (response) {
+    return response;
+  }, function (error) {
+    const res = error.response;
+    switch (res.status) {
+      case 401:
+        Notify.create({ message: 'Usuario não autenticado', color: 'warning' })
+        if (router.currentRoute.value.name !== 'login') {
+          router.push('/login')
+        }
+        break;
+      case 403:
+        Notify.create({ message: 'Você não tem permissão', color: 'warning' })
+        console.log(router.currentRoute.value.name)
+        if (router.currentRoute.value.name !== 'home') {
+          router.push('/home')
+        }
+        break;
+    }
+    return Promise.reject(error);
+  });
+
   const authApi = new AuthApi(undefined, url, api);
   const userApi = new UserApi(undefined, url, api);
   const roleApi = new RoleApi(undefined, url, api);

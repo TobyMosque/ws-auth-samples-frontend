@@ -13,7 +13,7 @@
         <q-btn class="full-width" flat color="primary" :label="$t('p-login.actions.forget')" @click="forget"></q-btn>
       </div>
       <div class="col col-7">
-        <q-btn class="full-width" color="positive" :label="$t('p-login.actions.login')" @click="login"></q-btn>
+        <q-btn class="full-width" color="positive" :label="$t('p-login.actions.login')" @click="login" :loading="loading"></q-btn>
       </div>
     </q-form>
   </div>
@@ -23,19 +23,27 @@
 import { defineComponent, onBeforeUnmount } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { useValidation } from 'src/composables/validations';
+import { useAppStore } from 'src/stores/app';
 
 export const loginPageStoreName = 'loginPage';
 export const useLoginPageStore = defineStore(loginPageStoreName, {
   state: () => ({
     userName: '',
-    password: ''
+    password: '',
+    loading: false
   }),
   actions: {
     forget () {
       console.log('forget: not implemented yet')
     },
-    login () {
-      console.log('login: not implemented yet')
+    async login () {
+      const appStore = useAppStore();
+      const { data } = await this.$authApi.login({
+        username: this.userName,
+        password: this.password
+      });
+      appStore.token = data.accessToken
+      this.$router.push('home')
     }
   }
 });
@@ -48,11 +56,12 @@ export default defineComponent({
     onBeforeUnmount(() => store.$dispose())
 
     const { userName, password } = storeToRefs(store)
-    const { forget, login } = store
+    const { forget, login, loading } = store
 
     const validation = useValidation({
       userName: {
-        required: true
+        required: true,
+        email: true,
       },
       password: {
         required: true
@@ -62,6 +71,7 @@ export default defineComponent({
     return {
       userName,
       password,
+      loading,
       forget,
       login,
       validation
