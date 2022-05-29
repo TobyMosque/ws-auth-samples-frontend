@@ -1,1 +1,39 @@
 // app global css in SCSS form
+body.body--dark {
+  color: $grey-1;
+  --q-primary: #26a69a;
+  --q-secondary: #027be3;
+  --q-accent: #9c27b0;
+  --q-positive: #21ba45;
+  --q-negative: #c10015;
+  --q-info: #31ccec;
+  --q-warning: #f2c037;
+  // custom colors
+  --q-main: #{$grey-10};
+  --q-content: #{$grey-9};
+  --q-content-2: #{$grey-8};
+}
+body.body--light {
+  color: $grey-10;
+  --q-primary: #027be3;
+  --q-secondary: #26a69a;
+  --q-accent: #9c27b0;
+  --q-positive: #21ba45;
+  --q-negative: #c10015;
+  --q-info: #31ccec;
+  --q-warning: #f2c037;
+  // custom colors
+  --q-main: white;
+  --q-content: #{$grey-2};
+  --q-content-2: #{$grey-4};
+}
+
+$colors: 'main', 'content', 'content-2';
+@each $color in $colors {
+  .bg-#{$color} {
+    background-color: var(--q-#{$color});
+  }
+  .text-#{$color} {
+    color: var(--q-#{$color});
+  }
+}

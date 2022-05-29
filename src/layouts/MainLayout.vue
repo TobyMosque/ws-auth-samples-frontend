@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout class="l-main" view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -31,7 +31,7 @@
           Essential Links
         </q-item-label>
 
-        <EssentialLink
+        <essential-link
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
@@ -42,70 +42,92 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <locale-switch></locale-switch>
   </q-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import EssentialLink from 'components/EssentialLink.vue';
+import { computed, defineAsyncComponent, defineComponent, onBeforeUnmount } from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+interface LinkList {
+  title: string
+  caption: string
+  icon: string
+  link: string
+}
+
+export const authLayoutStoreName = 'mainLayout';
+export const useMainLayoutStore = defineStore(authLayoutStoreName, {
+  state: () => ({
+    leftDrawerOpen: false
+  }),
+  getters: {
+    linksList (): LinkList[] {
+      return [
+        {
+          title: this.$t('l-main.docs'),
+          caption: 'quasar.dev',
+          icon: 'school',
+          link: 'https://quasar.dev'
+        },
+        {
+          title: this.$t('l-main.github'),
+          caption: 'github.com/quasarframework',
+          icon: 'code',
+          link: 'https://github.com/quasarframework'
+        },
+        {
+          title: this.$t('l-main.discord'),
+          caption: 'chat.quasar.dev',
+          icon: 'chat',
+          link: 'https://chat.quasar.dev'
+        },
+        {
+          title: this.$t('l-main.forum'),
+          caption: 'forum.quasar.dev',
+          icon: 'record_voice_over',
+          link: 'https://forum.quasar.dev'
+        },
+        {
+          title: this.$t('l-main.twitter'),
+          caption: '@quasarframework',
+          icon: 'rss_feed',
+          link: 'https://twitter.quasar.dev'
+        },
+        {
+          title: this.$t('l-main.facebook'),
+          caption: '@QuasarFramework',
+          icon: 'public',
+          link: 'https://facebook.quasar.dev'
+        },
+        {
+          title: this.$t('l-main.awesome.title'),
+          caption: this.$t('l-main.awesome.caption'),
+          icon: 'favorite',
+          link: 'https://awesome.quasar.dev'
+        }
+      ]
+    }
   }
-];
+});
+export type MainLayoutStore = ReturnType<typeof useMainLayoutStore>;
 
 export default defineComponent({
   name: 'MainLayout',
-
   components: {
-    EssentialLink
+    'essential-link': defineAsyncComponent(() => import('src/components/EssentialLink.vue')),
+    'locale-switch': defineAsyncComponent(() => import('src/components/LocaleSwitch.vue')),
   },
-
   setup () {
-    const leftDrawerOpen = ref(false)
+    const store = useMainLayoutStore()
+    onBeforeUnmount(() => store.$dispose())
+
+    const { leftDrawerOpen } = storeToRefs(store)
+    const essentialLinks = computed(() => store.linksList)
 
     return {
-      essentialLinks: linksList,
+      essentialLinks,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
