@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { cookieStorage } from './storages';
 
 export const appStoreName = 'counter'
 export const useAppStore = defineStore(appStoreName, {
@@ -34,6 +35,9 @@ export const useAppStore = defineStore(appStoreName, {
       }
       return this.decoded.roles.includes(role)
     }
+  },
+  persist: {
+    storage: cookieStorage
   }
 });
 export type AppStore = ReturnType<typeof useAppStore>;
