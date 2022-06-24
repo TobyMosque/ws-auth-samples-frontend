@@ -18,7 +18,6 @@ export default boot(({ store, router }) => {
         .map(record => record.meta.auth as string)
       if (roles.length > 0) {
         for (const role of roles) {
-          console.log(role, appStore.isOnRole(role))
           if (!appStore.isOnRole(role)) {
             return {
               path: '/home'

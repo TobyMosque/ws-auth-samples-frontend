@@ -89,7 +89,6 @@ export default boot(({ app, store, router }) => {
         break;
       case 403:
         Notify.create({ message: 'Você não tem permissão', color: 'warning' })
-        console.log(router.currentRoute.value.name)
         if (router.currentRoute.value.name !== 'home') {
           router.push('/home')
         }
