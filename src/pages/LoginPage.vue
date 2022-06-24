@@ -41,7 +41,7 @@ export const useLoginPageStore = defineStore(loginPageStoreName, {
       const { data } = await this.$authApi.login({
         username: this.userName,
         password: this.password
-      });
+      }, { withCredentials: true });
       appStore.token = data.accessToken
       this.$router.push('home')
     }

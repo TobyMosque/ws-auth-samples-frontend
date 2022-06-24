@@ -62,7 +62,6 @@ export default boot(({ app, store, router }) => {
   const url = 'http://localhost:3000'
   const api = axios.create({ baseURL: url }) as AxiosInstance;
   
-  const appStore = useAppStore(store)
   api?.interceptors.request.use(function (config) {
     if (appStore.isLogged()) {
       if (!config?.headers) {
@@ -75,21 +74,27 @@ export default boot(({ app, store, router }) => {
     return Promise.reject(error);
   });
 
-
   api?.interceptors.response.use(function (response) {
     return response;
-  }, function (error) {
+  }, async function (error) {
     const res = error.response;
     switch (res.status) {
       case 401:
-        Notify.create({ message: 'Usuario não autenticado', color: 'warning' })
-        if (router.currentRoute.value.name !== 'login') {
-          router.push('/login')
+        if (appStore.token) {
+          await appStore.refresh();
+          if (appStore.token) {
+            return api.request(error.config)
+          }
+        }
+        if (res.data?.path != '/api/auth/refresh') {
+          Notify.create({ message: 'Usuario não autenticado', color: 'warning' })
+          if (router.currentRoute.value.name !== 'login') {
+            router.push('/login')
+          }
         }
         break;
       case 403:
         Notify.create({ message: 'Você não tem permissão', color: 'warning' })
-        console.log(router.currentRoute.value.name)
         if (router.currentRoute.value.name !== 'home') {
           router.push('/home')
         }
@@ -131,4 +136,5 @@ export default boot(({ app, store, router }) => {
     $jobApi: jobApi,
     $defaultApi: defaultApi
   }))
+  const appStore = useAppStore(store);
 });

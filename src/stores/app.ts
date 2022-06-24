@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { discard } from 'src/utils';
 
 export const appStoreName = 'counter'
 export const useAppStore = defineStore(appStoreName, {
@@ -33,6 +34,15 @@ export const useAppStore = defineStore(appStoreName, {
         return false;
       }
       return this.decoded.roles.includes(role)
+    },
+    async refresh () {
+      try {
+        const { data } = await this.$authApi.refresh({ withCredentials: true });
+        this.token = data
+      } catch (err) {
+        this.token = ''
+        discard({ err })
+      }
     }
   }
 });

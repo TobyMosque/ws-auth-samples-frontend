@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import { useAppStore } from 'src/stores/app';
 
-export default boot(({ store, router }) => {
+export default boot(async ({ store, router }) => {
   const appStore = useAppStore(store)
   router.beforeEach((to) => {
     const records = to.matched.filter(record => record.meta.auth)
@@ -18,7 +18,6 @@ export default boot(({ store, router }) => {
         .map(record => record.meta.auth as string)
       if (roles.length > 0) {
         for (const role of roles) {
-          console.log(role, appStore.isOnRole(role))
           if (!appStore.isOnRole(role)) {
             return {
               path: '/home'
@@ -28,4 +27,5 @@ export default boot(({ store, router }) => {
       }
     }
   })
+  await appStore.refresh();
 });
