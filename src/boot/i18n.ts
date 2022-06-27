@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 import messages from 'src/i18n';
-import { Quasar } from 'quasar'
+import { Quasar } from 'quasar';
 
 function configureI18n({ lang = '' } = {}) {
   return createI18n({

@@ -1,3 +1,3 @@
-export function discard (ctx: unknown) {
-  return ctx
+export function discard(ctx: unknown) {
+  return ctx;
 }

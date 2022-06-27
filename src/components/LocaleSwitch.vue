@@ -42,21 +42,23 @@ export default defineComponent({
     const quasar = useQuasar();
     const i18n = useI18n();
 
-    const locale = ref(quasar.lang.isoName)
+    const locale = ref(quasar.lang.isoName);
     const icon = computed(() => `img:flags/${locale.value}.svg`);
 
-    async function set(val: ('pt-BR' | 'en-US')) {
+    async function set(val: 'pt-BR' | 'en-US') {
       i18n.locale.value = val;
-      function getLang () {
+      function getLang() {
         switch (val) {
-          case 'pt-BR': return import('quasar/lang/pt-BR');
-          case 'en-US': return import('quasar/lang/en-US');
+          case 'pt-BR':
+            return import('quasar/lang/pt-BR');
+          case 'en-US':
+            return import('quasar/lang/en-US');
         }
       }
-      
+
       const lang = await getLang();
       quasar.lang.set(lang as never);
-      locale.value = val
+      locale.value = val;
     }
     return {
       fab,

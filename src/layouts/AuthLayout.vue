@@ -34,19 +34,21 @@ export type AuthLayoutStore = ReturnType<typeof useAuthLayoutStore>;
 
 export default defineComponent({
   name: 'AuthLayout',
-  components: { 
-    'locale-switch': defineAsyncComponent(() => import('src/components/LocaleSwitch.vue')),
+  components: {
+    'locale-switch': defineAsyncComponent(
+      () => import('src/components/LocaleSwitch.vue')
+    ),
   },
-  setup () {
-    const store = useAuthLayoutStore()
-    onBeforeUnmount(() => store.$dispose())
+  setup() {
+    const store = useAuthLayoutStore();
+    onBeforeUnmount(() => store.$dispose());
 
-    const $q = useQuasar()
-    const dark = computed(() => $q.dark.isActive)
+    const $q = useQuasar();
+    const dark = computed(() => $q.dark.isActive);
     return {
-      dark
-    }
-  }
+      dark,
+    };
+  },
 });
 </script>
 

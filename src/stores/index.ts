@@ -1,8 +1,8 @@
-import { store } from 'quasar/wrappers'
-import { createPinia } from 'pinia'
-import PiniaPersistedStatePlugin from 'pinia-plugin-persistedstate'
-import { cookieStorage } from './storages'
-import { Cookies } from 'quasar'
+import { store } from 'quasar/wrappers';
+import { createPinia } from 'pinia';
+import PiniaPersistedStatePlugin from 'pinia-plugin-persistedstate';
+import { cookieStorage } from './storages';
+import { Cookies } from 'quasar';
 
 /*
  * If not building with SSR mode, you can
@@ -13,34 +13,30 @@ import { Cookies } from 'quasar'
  * with the Store instance.
  */
 
-
-
 export default store(({ ssrContext }) => {
-  const pinia = createPinia()
+  const pinia = createPinia();
 
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
 
-  const cookies = process.env.SERVER
-    ? Cookies.parseSSR(ssrContext)
-    : Cookies // otherwise we're on client
+  const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies; // otherwise we're on client
 
   pinia.use(({ options }) => {
     if (!options.persist || typeof options.persist === 'boolean') {
       return;
-    } 
+    }
     if (options.persist.storage === cookieStorage) {
       options.persist.storage = {
-        getItem (key: string) {
-          return JSON.stringify(cookies.get(key))
+        getItem(key: string) {
+          return JSON.stringify(cookies.get(key));
         },
-        setItem (key: string, value: string) {
+        setItem(key: string, value: string) {
           const obj = JSON.parse(value);
-          cookies.set(key, obj, { path: '/', sameSite: 'Lax', secure: true })
-        }
-      }
+          cookies.set(key, obj, { path: '/', sameSite: 'Lax', secure: true });
+        },
+      };
     }
-  })
-  pinia.use(PiniaPersistedStatePlugin)
-  return pinia
-})
+  });
+  pinia.use(PiniaPersistedStatePlugin);
+  return pinia;
+});

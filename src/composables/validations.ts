@@ -155,7 +155,9 @@ export function useValidation<T extends ValidationContextFields<keyof T>>(
     const names = Object.keys(validations) as (keyof ValidationFactories)[];
     for (const rule of names) {
       if (rules.includes(rule)) {
-        _rules.push(validations[rule]({ field, prefix, ctx: context as never }));
+        _rules.push(
+          validations[rule]({ field, prefix, ctx: context as never })
+        );
       }
     }
     _validations[field] = _rules as never;

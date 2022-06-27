@@ -1,7 +1,7 @@
 // This is just an example,
 // so you can safely delete all default props below
-import actions from './actions'
-import fields from './fields'
+import actions from './actions';
+import fields from './fields';
 
 export default {
   roles: {
@@ -13,7 +13,7 @@ export default {
     compare: '{field} and {other} do not match',
     email: 'The {field} field is not a valid e-mail address',
     required: 'The {field} field is required',
-    strength: 'Password is too weak, please improve your strength'
+    strength: 'Password is too weak, please improve your strength',
   },
   fields: fields,
   actions: actions,
@@ -37,12 +37,12 @@ export default {
     },
     actions: {
       forget: '@:actions.forget',
-      login: '@:actions.login'
+      login: '@:actions.login',
     },
   },
   'c-locale-switch': {
     title: 'Idioma',
     ptbr: 'Português',
-    enus: 'Inglês'
+    enus: 'Inglês',
   },
 };

@@ -1,7 +1,7 @@
 // This is just an example,
 // so you can safely delete all default props below
-import actions from './actions'
-import fields from './fields'
+import actions from './actions';
+import fields from './fields';
 
 export default {
   roles: {
@@ -37,12 +37,12 @@ export default {
     },
     actions: {
       forget: '@:actions.forget',
-      login: '@:actions.login'
+      login: '@:actions.login',
     },
   },
   'c-locale-switch': {
     title: 'Idiom',
     ptbr: 'Portuguese',
-    enus: 'English'
+    enus: 'English',
   },
 };
