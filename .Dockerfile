@@ -12,10 +12,7 @@ FROM develop-stage as local-deps-stage
 RUN yarn
 
 FROM local-deps-stage as build-stage
-RUN yarn workspace frontend quasar build -m ssr
-
-FROM local-deps-stage as dev-stage
-RUN yarn workspace frontend quasar dev -m ssr
+RUN yarn frontend:build
 
 FROM node:lts-alpine as production-stage
 WORKDIR /app
