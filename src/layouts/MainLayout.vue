@@ -14,6 +14,7 @@
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
+        <locale-switch></locale-switch>
       </q-toolbar>
     </q-header>
 
@@ -32,7 +33,6 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-    <locale-switch></locale-switch>
   </q-layout>
 </template>
 

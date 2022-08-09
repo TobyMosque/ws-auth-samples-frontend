@@ -1,16 +1,12 @@
 <template>
-  <q-page-sticky
-    position="bottom-right"
-    class="c-locale-switch"
-    :offset="[18, 18]"
-  >
+  <div class="c-locale-switch">
     <q-fab
       v-model="fab"
       :label="$t('c-locale-switch.title')"
       external-label
       vertical-actions-align="right"
       :icon="icon"
-      direction="up"
+      direction="down"
     >
       <q-fab-action
         label-position="left"
@@ -27,11 +23,13 @@
         external-label
       />
     </q-fab>
-  </q-page-sticky>
+  </div>
 </template>
 
 <script lang="ts">
+import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
+import { useAppStore } from 'src/stores/app';
 import { computed, defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -42,7 +40,8 @@ export default defineComponent({
     const quasar = useQuasar();
     const i18n = useI18n();
 
-    const locale = ref(quasar.lang.isoName);
+    const appStore = useAppStore();
+    const { locale } = storeToRefs(appStore);
     const icon = computed(() => `img:flags/${locale.value}.svg`);
 
     async function set(val: 'pt-BR' | 'en-US') {
@@ -71,19 +70,31 @@ export default defineComponent({
 
 <style lang="scss">
 .c-locale-switch {
+  --size: 42px;
+  --mini: 32px;
   .q-btn--fab {
     padding: 0;
+    margin: 6px;
+    width: var(--size);
+    height: var(--size);
+    min-width: var(--size);
+    min-height: var(--size);
     .q-fab__icon-holder,
     img {
-      width: 56px;
-      height: 56px;
+      width: var(--size);
+      height: var(--size);
     }
   }
   .q-btn--fab-mini {
     padding: 0;
+    margin: 4px;
+    width: var(--mini);
+    height: var(--mini);
+    min-width: var(--mini);
+    min-height: var(--mini);
     img {
-      width: 40px;
-      height: 40px;
+      width: var(--mini);
+      height: var(--mini);
     }
   }
 }

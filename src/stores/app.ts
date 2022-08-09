@@ -6,6 +6,7 @@ export const appStoreName = 'counter';
 export const useAppStore = defineStore(appStoreName, {
   state: () => ({
     token: '',
+    locale: '',
   }),
   getters: {
     decoded: (state) => {

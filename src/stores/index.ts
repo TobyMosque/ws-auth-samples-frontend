@@ -1,6 +1,6 @@
 import { store } from 'quasar/wrappers';
 import { createPinia } from 'pinia';
-import PiniaPersistedStatePlugin from 'pinia-plugin-persistedstate';
+import PiniaPersistedStatePlugin, { StorageLike } from 'pinia-plugin-persistedstate';
 import { cookieStorage } from './storages';
 import { Cookies } from 'quasar';
 
@@ -21,22 +21,29 @@ export default store(({ ssrContext }) => {
 
   const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies; // otherwise we're on client
 
-  pinia.use(({ options }) => {
-    if (!options.persist || typeof options.persist === 'boolean') {
-      return;
-    }
-    if (options.persist.storage === cookieStorage) {
-      options.persist.storage = {
-        getItem(key: string) {
-          return JSON.stringify(cookies.get(key));
-        },
-        setItem(key: string, value: string) {
-          const obj = JSON.parse(value);
-          cookies.set(key, obj, { path: '/', sameSite: 'Lax', secure: true });
-        },
-      };
-    }
-  });
+  const realCookieStorage: StorageLike = {
+    getItem(key: string) {
+      const json = cookies.get(key)
+      return JSON.stringify(json);
+    },
+    setItem(key: string, value: string) {
+      const obj = JSON.parse(value);
+      cookies.set(key, obj, { path: '/', sameSite: 'Lax', secure: true });
+    },
+  }
+  function swapStorage(source: StorageLike, target: StorageLike) {
+    pinia.use(({ options }) => {
+      if (!options.persist || typeof options.persist === 'boolean') {
+        return;
+      }
+      if (options.persist.storage === source) {
+        options.persist.storage = target;
+      }
+    });
+  }
+
+  swapStorage(cookieStorage, realCookieStorage)
   pinia.use(PiniaPersistedStatePlugin);
+  swapStorage(realCookieStorage, cookieStorage)
   return pinia;
 });

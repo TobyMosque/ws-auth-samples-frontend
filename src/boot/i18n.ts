@@ -2,10 +2,11 @@ import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 import messages from 'src/i18n';
 import { Quasar } from 'quasar';
+import { useAppStore } from 'src/stores/app';
 
 function configureI18n({ lang = '' } = {}) {
   return createI18n({
-    locale: lang || Quasar.lang.isoName,
+    locale: lang,
     globalInjection: true,
     messages,
   });
@@ -25,7 +26,11 @@ declare module 'pinia' {
 }
 
 export default boot(({ app, store }) => {
-  const i18n = configureI18n();
+  const appStore = useAppStore(store);
+  if (!appStore.locale) {
+    appStore.locale = Quasar.lang.isoName
+  }
+  const i18n = configureI18n({ lang: appStore.locale });
 
   // Set i18n instance on app
   app.use(i18n);

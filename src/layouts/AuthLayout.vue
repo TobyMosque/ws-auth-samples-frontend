@@ -12,13 +12,16 @@
         <div
           class="col col-auto shadow-up-2 relative-position bg-content l-clean__page-container"
         >
+          <q-toolbar class="text-primary">
+            <q-space></q-space>
+            <locale-switch></locale-switch>
+          </q-toolbar>
           <div class="l-clean__page-form q-pa-xl absolute-center">
             <router-view />
           </div>
         </div>
       </q-page>
     </q-page-container>
-    <locale-switch></locale-switch>
   </q-layout>
 </template>
 
