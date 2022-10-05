@@ -3,9 +3,12 @@ import { useAppStore } from 'src/stores/app';
 
 export default boot(({ store, router }) => {
   const appStore = useAppStore(store);
-  router.beforeEach((to) => {
+  router.beforeEach(async (to) => {
     const records = to.matched.filter((record) => record.meta.auth);
     if (records.length > 0) {
+      if (appStore.token && !appStore.isLogged()) {
+        await appStore.refresh();
+      }
       if (!appStore.isLogged()) {
         return {
           path: '/login',

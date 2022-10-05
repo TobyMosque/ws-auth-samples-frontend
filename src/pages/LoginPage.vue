@@ -59,10 +59,10 @@ export const useLoginPageStore = defineStore(loginPageStoreName, {
     },
     async login() {
       const appStore = useAppStore();
-      const { data } = await this.$authApi.login({
+      const { data } = await this.$authApi.login('server', {
         username: this.userName,
         password: this.password,
-      });
+      }, { withCredentials: true });
       appStore.token = data.accessToken;
       this.$router.push('home');
     },

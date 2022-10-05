@@ -34,6 +34,11 @@ export const useAppStore = defineStore(appStoreName, {
       }
       return this.decoded.roles.includes(role);
     },
+    async refresh() {
+      const { data: { accessToken } } = await this.$authApi.refresh('server', undefined, { withCredentials: true });
+      this.token = accessToken;
+      return this.isLogged();
+    }
   },
   persist: true,
 });

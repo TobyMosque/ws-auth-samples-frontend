@@ -59,56 +59,10 @@ export function useApi() {
   };
 }
 
-export default boot(({ app, store, router }) => {
+export default boot(async ({ app, store, router }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
   const url = process.env.API_URL;
   const api = axios.create({ baseURL: url }) as AxiosInstance;
-
-  const appStore = useAppStore(store);
-  api?.interceptors.request.use(
-    function (config) {
-      if (appStore.isLogged()) {
-        if (!config?.headers) {
-          config.headers = {};
-        }
-        config.headers.Authorization = `Bearer ${appStore.token}`;
-      }
-      return config;
-    },
-    function (error) {
-      return Promise.reject(error);
-    }
-  );
-
-  api?.interceptors.response.use(
-    function (response) {
-      return response;
-    },
-    function (error) {
-      const res = error.response;
-      switch (res.status) {
-        case 401:
-          Notify.create({
-            message: 'Usuario não autenticado',
-            color: 'warning',
-          });
-          if (router.currentRoute.value.name !== 'login') {
-            router.push('/login');
-          }
-          break;
-        case 403:
-          Notify.create({
-            message: 'Você não tem permissão',
-            color: 'warning',
-          });
-          if (router.currentRoute.value.name !== 'home') {
-            router.push('/home');
-          }
-          break;
-      }
-      return Promise.reject(error);
-    }
-  );
 
   const authApi = new AuthApi(undefined, url, api);
   const userApi = new UserApi(undefined, url, api);
@@ -143,4 +97,55 @@ export default boot(({ app, store, router }) => {
     $jobApi: jobApi,
     $defaultApi: defaultApi,
   }));
+
+  const appStore = useAppStore(store);
+  api?.interceptors.request.use(
+    function (config) {
+      if (appStore.isLogged()) {
+        if (!config?.headers) {
+          config.headers = {};
+        }
+        config.headers.Authorization = `Bearer ${appStore.token}`;
+      }
+      return config;
+    },
+    function (error) {
+      return Promise.reject(error);
+    }
+  );
+
+  api?.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    async function (error) {
+      const res = error.response;
+      switch (res.status) {
+        case 401:
+          Notify.create({
+            message: 'Usuario não autenticado',
+            color: 'warning',
+          });
+          if (appStore.token && await appStore.refresh()) {
+            return api.request(error.config);
+          }
+          if (router.currentRoute.value.name !== 'login') {
+            router.push('/login');
+          }
+          break;
+        case 403:
+          Notify.create({
+            message: 'Você não tem permissão',
+            color: 'warning',
+          });
+          if (router.currentRoute.value.name !== 'home') {
+            router.push('/home');
+          }
+          break;
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  await appStore.refresh();
 });
