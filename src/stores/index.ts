@@ -16,8 +16,8 @@ export default store(({ ssrContext }) => {
   const pinia = createPinia();
 
   const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies; // otherwise we're on client
-  pinia.use(createQuasarCookiesPersistedState(cookies, null, {
-    cookiesOptions: { path: '/', sameSite: 'Lax', secure: true }
+  pinia.use(createQuasarCookiesPersistedState(cookies, {
+    cookiesOptions: { path: '/', sameSite: 'Lax', secure: true, expires: 7 }
   }))
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
